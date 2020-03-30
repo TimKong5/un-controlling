@@ -1,0 +1,27 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: rater-vs
+  namespace: dev
+spec:
+  hosts:
+    - rater-svc
+  http:
+    - name: "rater"
+      route:
+      - destination:
+           host: rater-svc.dev.svc.cluster.local
+           port:
+             number: 8090
+           subset: v1
+        weight: 75
+      - destination:
+          host: rater-svc.dev.svc.cluster.local
+          port:
+            number: 8090
+          subset: v2
+        weight: 25
+      retries:
+         attempts: 3
+         perTryTimeout: 3s
+         retryOn: gateway-error,connect-failure,refused-stream

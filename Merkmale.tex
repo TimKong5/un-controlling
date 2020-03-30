@@ -1,0 +1,59 @@
+% !TEX root =  master.tex
+\chapter{Formulierung der Vergleichsmetrik für den Infrastrukturvergleich}
+\label{merkmale}
+Die folgenden Unterkapitel beinhalten die Formulierung der Merkmale für den Vergleich der Plattformen \ac{CF} und Kubernetes und der dabei verwendeten Methodik. Des Weiteren erfolgt die Kategorisierung der Vergleichsmerkmale sowie die Erläuterung der Untersuchungsvorgehensweise. Abschließend wird die Gewichtung der definierten Merkmale anhand der für eine Portierung ausschlaggebenden Kriterien des Infrastruktur-Teams durchgeführt.
+\section{Vorgehensweise zur Ermittlung der Vergleichsmetrik}
+Die Formulierung der Vergleichsmerkmale wurde durch die Eindrücke und Erfahrungen durchgeführt, welche im Rahmen dieser Thesis stattgefundenen praktischen Mitarbeit im Projekt SAP Subscription Billing gesammelt wurden. Zudem basieren sie auf der \ac{ISO}-Norm 25010, welche ein Modell für die allgemeinen Qualitätsanforderungen von Software definiert.\footnote{\ac{ISO}-Norm 25010: \url{https://www.iso.org/standard/35733.html}}
+Des Weiteren wurden diese in Zusammenarbeit mit den Architekten des Infrastruktur-Teams aus dem SAP Subscription Billing Projekt evaluiert und an die projektinternen Interessen und die ausschlaggebenden Kriterien, die zur Rechtfertigung der Portierung der \ac{SaaS}-Lösung verwendet werden können, angepasst.
+\section{Kategorisierung der Merkmale}
+Die Merkmale können mittels der Unterscheidung in Vergleichsmerkmale, die entweder funktionale oder nicht funktionale Anforderungen beinhalten, kategorisiert werden. Dabei handelt es sich bei funktionalen Anforderungen um Funktionen, welche von der Plattform unterstützt oder nativ angeboten werden. Die nicht funktionalen Anforderungen belaufen sich hierbei auf allgemeine Qualitätsattribute der Software.\\
+\\\\
+Innerhalb der praktischen Arbeit der vorliegenden Thesis wurden folgende funktionale Vergleichsmerkmale untersucht: zusätzlich benötigte Infrastruktur-Services und die Funktionalitäten für das Monitoring und das Management der Logdateien der Microservices.\\
+Als nicht funktionale Vergleichsmerkmale wurden die folgenden Merkmale betrachtet und ausgewertet: Performance, monatliche Kosten, Sicherheit, Verfügbarkeit der Plattform, Mechanismen zur Skalierung, Konfigurierbarkeit, Erweiterbarkeit, benötigte Einarbeitungszeit und die Portierbarkeit der Bereitstellung der Anwendung.
+
+\section{Erläuterung der Qualitätsattribute und der Untersuchungsvorgehensweise}
+\label{kapitel_merkmale_vorgehensweise}
+\begin{description}
+	\item[Performance] \hfill \\
+	Die Untersuchung der Performance der beiden Plattformen wird mittels der Messung der durchschnittlichen Antwortzeit der \ac{HTTPS}-Anfragen, der Gesamtanzahl an beantworteten Anfragen und dem Durchsatz an Anfragen pro Sekunde durchgeführt. Diese Tests werden mit Hilfe des Apache JMeter Tools ausgeführt.\footnote{Weitere Informationen zu JMeter: \url{https://jmeter.apache.org/}} Dabei werden mit mehreren Threads parallelisierte Anfragen, welche keine Kommunikation zwischen dem Microservice und der Datenbank benötigen, an die \ac{API}-Schnittstelle eines bereitgestellten Microservices gesendet. Dieser wird aus Gründen der Vergleichbarkeit mit den gleichen Rechenkapazitäten und der übereinstimmenden Anzahl an Replikaten jeweils auf der \ac{CF} und dem Kubernetes Cluster bereitgestellt.
+	Dabei werden pro Plattform fünf Tests mit einer Dauer von jeweils fünf Minuten für jede unterschiedliche Testkonfiguration durchgeführt. Die Testkonfigurationen unterscheiden sich in der Anzahl der gleichzeitigen Threads. Hierbei sollen jeweils drei Konfigurationen mit 100, 150 und 200 Threads ausgewertet werden.
+	\item[Kosten] \hfill \\
+	Bei der Betrachtung der Kosten wird eine Eingrenzung auf die für die Anwendungsumgebung anfallenden Kosten vorgenommen. Dies bedeutet, dass der Kostenvergleich mit den Kosten pro \ac{GB} \ac{RAM} der Anwendungsumgebung	durchgeführt wird. Zum aktuellen Zeitpunkt der vorliegenden Thesis sind die 15 Microservices der \ac{SaaS}-Lösung mit jeweils einem \ac{GB} \ac{RAM} und zwei Instanzen auf der \ac{CF} bereitgestellt. Eine Ausnahme ist nur ein rechenintensiver Microservice, welcher zwei \ac{GB} \ac{RAM} zur Verfügung hat. Somit werden insgesamt 34 \ac{GB} \ac{RAM} als Vergleichswert für die Kosten der beiden Plattformen angenommen. Außerdem wird der weitere Wert von 780 \ac{GB} \ac{RAM} betrachtet, der aus projektinternen Berechnungen aller für das Projekt benötigten Rechenressourcen hervorgeht. Dieser Wert setzt sich aus den verschiedenen Landschaften zusammen, welche für die Trennung der Entwicklungs-, Test- und Produktivumgebung dienen.\\
+	Jedoch sollte hierbei beachtet werden, dass diese Untersuchungsvorgehensweise ausschließlich einen Teil der eigentlich repräsentativeren \ac{TCO} betrachtet. Der Vergleich der gesamten \ac{TCO} ist aufgrund des eingeschränkten zeitlichen Rahmens der Thesis und durch die unklaren Informationen innerhalb des SAP Subscription Billing Projektes nicht möglich.
+	\item[Sicherheit] \hfill \\
+	Die Sicherheit wird mit Hilfe der theoretischen Konzepte der Anwendungsbereitstellung der beiden Plattformen untersucht. Hierbei spielen besonders die externe Verfügbarkeit der Anwendungen und und die Konzepte für die Umsetzung von Zugriffsberechtigungen eine wichtige Rolle. Des Weiteren werden die Mechanismen zur generellen Absicherung der Kommunikation der Microservices untereinander betrachtet. Hierbei soll auch die Möglichkeit einer ungewollten Kommunikation von Microservices, welche in unterschiedlichen Landschaften bereitgestellt sind, untersucht werden. 
+	\item[Verfügbarkeit] \hfill \\
+	Die Verfügbarkeit kann aufgrund fehlender Kennzahlen und Informationen bezüglich der effektiven Verfügbarkeit der beiden Plattformen und der zusätzlichen Abhängigkeit der zugrundeliegenden Infrastruktur und den eingesetzten Datenbanken ausschließlich anhand der \acsp{SLA} verglichen werden. Zudem werden die Funktionalitäten zur Sicherstellung der Verfügbarkeit untersucht und ausgewertet.
+	\item[Skalierbarkeit] \hfill \\
+	Der Vergleich der Skalierbarkeit wird mit Hilfe der Auswertung der Mechanismen für die automatische Skalierung der bereitgestellten Anwendung durchgeführt. Diese sollte abhängig von der sich dynamisch ändernden Auslastung der Infrastruktur und der Anwendung sein. Zudem wird hierbei in die vertikale und horizontale Dimension der Skalierbarkeit sowie den möglichen Ebenen der Skalierung unterschiedenen.
+	\item[Konfigurierbarkeit] \hfill \\
+	Die Auswertung der Konfigurierbarkeit erfolgt seitens der \ac{CF} mittels der Expertise der Softwareentwickler, die bereits seit mehreren Jahren täglich mit der \ac{CF}-Plattform arbeiten. Außerdem fließen besonders die praktischen Erfahrungen, welche im Rahmen dieser Thesis bei der Umsetzung der Portierung der \ac{SaaS}-Lösung auf ein Kubernetes Cluster gesammelt wurden, in die Auswertung der Konfigurierbarkeit von Kubernetes mit ein. 
+	\item[Erweiterbarkeit] \hfill \\
+	Zur Evaluation der Erweiterbarkeit dienen die von den Plattformen unterstützten Strategien für die Aktualisierung einer bereitgestellten Anwendung. Des Weiteren wird hierbei auf die Möglichkeit des sogenannten \textbf{Zero-Downtime-Deployments} geachtet. Dies zielt auf eine unterbrechungsfreie Aktualisierung der bereitgestellten Anwendung ab.
+	\item[Einarbeitungszeit] \hfill \\
+	Die Auswertung der benötigten Einarbeitungszeit geschieht, wie auch die Betrachtung der Konfigurierbarkeit, basierend auf den gesammelten praktischen Erfahrungen. Hierbei spielt besonders das theoretische und praktische Wissen, das für eine erste Bereitstellung einer Anwendung auf der Plattform benötigt wird, eine wichtige Rolle.
+	\item[Portierbarkeit] \hfill \\
+	Das Merkmal der Portierbarkeit dient zur Betrachtung der Möglichkeiten eines Wechsels des \ac{IaaS}-Providers. Zudem wird die Unterstützung von \textbf{Multi-Cloud-Szenarien} und der Anwendungsbereitstellung in unterschiedlichen Regionen ausgewertet. Die spezifische Erläuterung des Multi-Cloud-Szenarios findet in Kapitel \ref{bewertung_cf} statt.
+	\item[Infrastruktur-Services] \hfill \\
+	Mit dem Merkmal Infrastruktur-Services werden zusätzlich Microservices und weitere Infrastruktur-Komponenten, welche zum Abdecken von nicht von der Plattform nativ bereitgestellten Funktionalitäten benötigt werden, dargestellt. Dabei wird bei der prototypischen Bereitstellung der Software auf dem Kubernetes Cluster die Notwendigkeit ausgewählter Infrastruktur-Services untersucht, welche bei der aktuellen Infrastrukturlösung mit \ac{CF} eingesetzt werden.   
+	\item[Monitoring und Logging] \hfill \\
+	Im Rahmen der Untersuchung der Möglichkeiten für das Monitoring der bereitgestellten Anwendung und das zentrale Verwalten der Logdateien sollen die verwendeten Tools der aktuell auf der \ac{CF} basierenden Infrastrukturlösung auch auf dem Kubernetes Cluster implementiert und ausgewertet werden. Die hierbei eingesetzten Tools werden in Kapitel \ref{bewertung_cf} vorgestellt. Des Weiteren werden die hierfür anfallenden Kosten sowie der Aufwand für den Betrieb der Tools betrachtet.
+\end{description}
+\newpage
+\section{Gewichtung der Vergleichsmerkmale}
+\label{gewichtung_merkmale}
+Da die vorliegende Thesis auf die Evaluation der beiden Plattformen für das Infrastruktur-Team des SAP Subscription Billing Projektes abzielt, erfolgt auch die Gewichtung der Vergleichsmerkmale anhand der für das Infrastruktur-Team ausschlaggebenden Kriterien.\\ 
+Dieses ist unter anderem für den täglichen Betrieb aller Systemlandschaften verantwortlich, welche für den produktiven Betrieb und die Weiterentwicklung der \ac{SaaS}-Lösung genutzt werden. Des Weiteren führt das Infrastruktur-Team die täglich stattfindende Aktualisierung der bereitgestellten Softwarelösung auf allen vorhandenen Systemlandschaften durch.\\ 
+Innerhalb der praktischen Mitarbeit im Infrastruktur-Team wurde festgestellt, dass für den produktiven Betrieb der \ac{SaaS}-Lösung besonders die Verfügbarkeit der eingesetzten Plattform, deren Mechanismen zur Skalierung und die generell unterstützen Sicherheitskonzepte ausschlaggebend sind. Außerdem sind auch die Konfigurierbarkeit, die Möglichkeiten für das Monitoring und Logging sowie die Erweiterbarkeit der Softwarelösung besonders relevant. Dabei begründet sich beispielsweise die stärkere Gewichtung der Erweiterbarkeit durch die täglich durchgeführte Aktualisierung der Anwendungen, welche aufgrund der Häufigkeit automatisiert und ohne Unterbrechung durchgeführt werden muss.\\
+\\
+Deshalb sind die zuvor genannten Qualitätsmerkmale für die wissenschaftliche Untersuchung der vorliegenden Thesis ausschlaggebend und werden innerhalb des Vergleichs der beiden Plattformen stärker gewichtet.
+\begin{comment}
+	Aus der Sicht des Anwenders der Software wird die Gewichtung der Merkmale basierend auf den Ergebnissen der Forschung von Claus-Peter H. Ernst und Franz Rothlauf, welche im Jahr 2012 die potentiellen Erfolgsfaktoren von \ac{SaaS}-Unternehmen mittels des damaligen Forschungsstandes gesammelt und zusammengefasst haben, durchgeführt.\\
+	Laut Claus-Peter H. Ernst und Franz Rothlauf sind aus Sicht des Anwenders primär die für die Benutzung des \ac{SaaS}-Angebots anfallenden Kosten sowie die Sicherheit der Daten ausschlaggebend.\autocite[Vgl.][S. 5]{Ernst.2012}
+	Jedoch sollte dies aufgrund der Weiterentwicklungen innerhalb des vergangenen Jahren nicht als vollumfängliches Ergebnis gesehen werden, da besonders die Verfügbarkeit auch für den Anwender der \ac{SaaS}-Lösung wesentlich ist.\\
+	\\
+	Insgesamt kann durch die zuvor aufgezeigten Interessengruppen und deren ausschlaggebenden Qualitätsmerkmale für die Auswahl einer Plattform zur Bereitstellung einer \ac{SaaS}-Lösung die stärkere Gewichtung der zuvor aufgezählten Merkmale für die wissenschaftliche Untersuchung der vorliegenden Thesis angenommen werden. 
+\end{comment}
+
+ 
+

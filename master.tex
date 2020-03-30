@@ -1,0 +1,111 @@
+%   Prof. Dr. Julian Reichwald
+%   auf Basis einer Vorlage von Prof. Dr. Jörg Baumgart
+%   DHBW Mannheim
+
+
+\documentclass[
+12pt,
+BCOR=5mm,
+DIV=12,
+headinclude=on,
+footinclude=off,
+parskip=half,
+bibliography=totoc,
+listof=entryprefix,
+toc=listof,
+pointlessnumbers,
+plainfootsepline]{scrreprt}
+
+%Konfigurationsdatei einziehen
+
+\input{config}
+
+\begin{document}
+
+%% BITTE GEBEN SIE HIER DEN TITEL UND DIE AUTORIN / DEN AUTOR DER ARBEIT AN!
+%% DIESE INFORMATIONEN _MÜSSEN_ GESETZT SEIN, UM TITELBLATT, ABSTRACT UND 
+%% EIGENSTÄNDIGKEITSERKLÄRUNG AUTOMATISCH ANZUPASSEN!
+\TitelDerArbeit{Konzeption und prototypische Umsetzung der Portierung einer SaaS-Lösung auf ein Kubernetes Cluster am Beispiel von SAP Subscription Billing}
+\AutorDerArbeit{Jonas Breuer}
+\Firma{SAP SE}
+\Kurs{WWI17SEA}
+
+\input{titlepage}
+
+\pagenumbering{roman} % Römische Seitennummerierung
+\normalfont
+
+
+%   Sperrvermerk
+\input{nondisclosurenotice}
+
+%	Kurzfassung
+\input{abstract}
+
+%	Inhaltsverzeichnis
+\tableofcontents
+
+%	Abbildungsverzeichnis
+\listoffigures
+
+%	Tabellenverzeichnis
+\listoftables
+
+%	Listingsverzeichnis
+\lstlistoflistings
+
+% 	Algorithmenverzeichnis
+% \listofalgorithms
+
+% 	Abkürzungsverzeichnis (siehe Datei acronyms.tex!)
+\input{acronyms}
+
+%--------------------------------
+% Start des Textteils der Arbeit
+%--------------------------------
+\clearpage
+\ihead{\chaptername~\thechapter} % Neue Header-Definition
+\pagenumbering{arabic}  % Arabische Seitenzahlen
+
+%	Anleitungs-Datei anleitung.tex einziehen. Auf diese Weise sollten Sie versuchen, für jedes einzelne
+% Kapitel eine eigene Datei anzulegen und mittels input-Kommando einzuziehen.
+%\input{anleitung}
+
+\input{Einleitung}
+
+\input{Theoretische_Grundlagen}
+
+\input{Merkmale}
+
+\input{Analyse_Infrastruktur}
+
+\input{Konzeption} 
+
+\input{Umsetzung} 
+
+\input{Evaluierung} 
+
+\input{Fazit_und_Ausblick}
+
+
+% Der Anhang beginnt hier - jedes Kapitel wird alphabetisch aufgezählt. (Anhang A, B usw.)
+\appendix
+\ihead{\appendixname~\thechapter} % Neue Header-Definition
+%\pagenumbering{gobble}
+\cleardoublepage
+\pagenumbering{roman} % Römische Seitennummerierung
+\setcounter{page}{7}
+\input{appendix}
+%	Literaturverzeichnis
+
+\ihead{} % Neue Header-Definition
+\cleardoublepage
+%\pagenumbering{roman} % Römische Seitennummerierung
+%\setcounter{page}{7}
+\printbibliography[title=Literaturverzeichnis]
+%\end{description}
+% Ehrenwörtliche Erklärung ewerkl.tex einziehen
+\input{ewerkl.tex}
+
+
+\end{document}

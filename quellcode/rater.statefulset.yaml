@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: rater-v1
+  namespace: dev
+  labels:
+    app: rater
+    version: v1
+spec:
+  serviceName: "rater-svc"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rater
+      version: v1
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: rater
+        version: v1
+    spec:
+      imagePullSecrets:
+        - name: myregistrykey
+      serviceAccountName: rater
+      containers:
+        - name: rater
+          image: subscription-billing.docker.repositories.sap.ondemand.com/k8s/rater:latest
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: rater-configmap
+            - secretRef:
+                name: bc-cred-for-rater
+          securityContext:
+            privileged: true
+
+          ports:
+            - containerPort: 8090
+          readinessProbe:
+            tcpSocket:
+              port: 8090
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 2
+            successThreshold: 1
+          livenessProbe:
+            tcpSocket:
+              port: 8090
+            initialDelaySeconds: 120
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 2
+            successThreshold: 1
+          resources:
+            requests:
+              memory: "1G"
+              cpu: "1"
+            limits:
+              memory: "1G"
+              cpu: "1"

@@ -1,0 +1,20 @@
+apiVersion: skaffold/v1beta16
+kind: Config
+metadata:
+  name: rater-service
+build:
+  tagPolicy:
+    dateTime:
+      format: 2006-01-02_15-04-05.999_MST
+
+  artifacts:
+    - image: subscription-billing.docker.repositories.sap.ondemand.com/k8s/rater
+      context: ./
+      docker:
+        dockerfile: Dockerfile
+
+deploy:
+  kubeContext: sb-gardener
+  kubectl:
+    manifests:
+      - ./rater/k8-manifest-jb/dev-namespace/rater.deployment.yaml

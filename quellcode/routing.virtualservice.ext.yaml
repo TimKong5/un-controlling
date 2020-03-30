@@ -1,0 +1,46 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: router-vs-ext
+  namespace: default
+spec:
+  hosts:
+    - "rater.ingress.k8s-sb.subbilling.shoot.canary.k8s-hana.ondemand.com"
+  gateways:
+    - default-gateway
+  http:
+    - name: "rater-dev"
+      match:
+      - headers:
+          X-Ngom-Tenant:
+            prefix: "revcloud-dev"
+          X-Ngom-User-Name:
+            regex: Jonas|Jonas2
+      route:
+       - destination:
+           host: rater-svc-ext.dev.svc.cluster.local
+           port:
+             number: 8090
+           subset: v1
+         weight: 75
+       - destination:
+           host: rater-svc-ext.dev.svc.cluster.local
+           port:
+             number: 8090
+           subset: v2
+         weight: 25
+
+    - name: "rater-prod"
+      match:
+      - headers:
+          X-Ngom-Tenant:
+             prefix: "revcloud-prod"
+          X-Ngom-User-Name:
+             regex: Jonas|Jonas2
+      route:
+          - destination:
+              host: rater-svc-ext.prod-2.svc.cluster.local
+              port:
+                number: 8090
+              subset: v1
+

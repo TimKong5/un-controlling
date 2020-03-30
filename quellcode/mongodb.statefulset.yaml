@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongodb-business-config
+  namespace: dev
+spec:
+  serviceName: "mongodb-business-config-svc"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb-business-config
+  template:
+    metadata:
+      labels:
+        app: mongodb-business-config
+    spec:
+      containers:
+        - name: mongodb
+          image: mongo:latest
+          ports:
+            - containerPort: 27017
+              name: mongodb
+          volumeMounts:
+            - name: pvc-mongodb-slow
+              mountPath: /data/db
+          resources:
+            limits:
+              memory: "500M"
+              cpu: "250m"
+  volumeClaimTemplates:
+    - metadata:
+        name: pvc-mongodb-slow
+      spec:
+        storageClassName: gce-slow
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 1Gi

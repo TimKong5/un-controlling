@@ -1,0 +1,21 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ .Release.Name }}-vs
+  namespace: {{ .Release.Namespace }}
+spec:
+  hosts:
+    - {{ .Release.Name }}-svc
+  http:
+  - name: {{ .Release.Name }}
+    route:
+    - destination:
+        host: {{ (print .Release.Name "-svc." .Release.Namespace ".svc.cluster.local")  | quote }}
+        port:
+          number: {{ .Values.microservice.port }}
+        subset: {{ .Values.microservice.version }}
+      weight: 100
+    retries:
+       attempts: 3
+       perTryTimeout: 3s
+       retryOn: gateway-error,connect-failure,refused-stream

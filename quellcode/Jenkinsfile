@@ -1,0 +1,29 @@
+@Library('ngom-modules')
+import com.sap.billcrowd.jenkins.execution.*
+import com.sap.billcrowd.jenkins.model.*
+
+node {
+	try {
+        k8sDeployment()
+    } catch (Exception e) {
+        currentBuild.result = 'FAILURE'
+        new BuildStatusEmail(this).sendEmail(e)
+        throw e
+    } finally {
+        deleteDir()
+    }
+
+}
+
+def k8sDeployment() {
+	try {
+		PipelineUtil.sbDockerBuildTools(this, {
+			stage("K8s Deployment") {
+				container("skaffold") {
+					unstash "dir"
+					sh "skaffold run"
+				}
+			}
+		})
+	 } catch (Exception e) {}
+}

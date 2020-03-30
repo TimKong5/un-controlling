@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rater-configmap
+  namespace: dev
+data:
+  spring.rabbitmq.host: "rabbitmq-svc"
+  business.configuration.url: "http://business-config-svc:8080"
+  spring.profiles.active: "docker"
+  spring.datasource.url: "jdbc:postgresql://postgres-rater-svc:5432/postgres"
+  spring.datasource.username: "postgres"
+  spring.datasource.platform: "postgresql"
+  spring.datasource.password: ""
+  spring.cloud.vault.enabled: "false"

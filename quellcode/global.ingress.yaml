@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: rater-ingress-service
+  namespace: istio-system
+spec:
+  tls:
+    - hosts:
+        - "rater.ingress.k8s-sb.subbilling.shoot.canary.k8s-hana.ondemand.com"
+  rules:
+    - host: "rater.ingress.k8s-sb.subbilling.shoot.canary.k8s-hana.ondemand.com"
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: istio-ingressgateway
+              servicePort: 80
